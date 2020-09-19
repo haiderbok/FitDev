@@ -2,20 +2,21 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import {createStore} from 'redux';
+import SignUp from './components/Signup'
+import {Provider} from 'react-redux'
+import rootReducer from './reducers/rootReducer'
 
-const usersCollection = firestore().collection('users');
-usersCollection.doc("wpzT9jMOTVtMToTSzyut").get().then(data => console.log(data));
+const store = createStore(rootReducer);
 
-console.log("Hi")
 //console.log(query)
 
-componentdidMount
 export default function App() {
+  
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <SignUp />
+    </Provider>
   );
 }
 

@@ -24,7 +24,7 @@ class SignUp extends Component  {
         };
       }
 
-    /* Fields validation for the sign up page ----- in Progress ----- */
+    /* Fields validation for the sign up page ----- in Progress -----cd  */
      feildValidation =  () =>  {
 
         const values = Object.values(this.state);

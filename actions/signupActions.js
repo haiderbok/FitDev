@@ -6,9 +6,9 @@
 
 // Action to add the user into the firestore
 export const addUser = (user) => {
-    console.log(user);
     return {
         type : 'ADD USER',
         user : user
     }
 }
+

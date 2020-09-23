@@ -23,9 +23,11 @@ const SignUpreducer = (state = initialState, action) => {
                   email: action.user.email,
                   password: action.user.password,
               })
-            break;
+              return state
+        default:
+            return state;
     }
-    return state;
+    
 }
 
 export default SignUpreducer;

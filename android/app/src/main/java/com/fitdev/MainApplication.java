@@ -27,7 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -44,8 +44,8 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       List<ReactPackage> packages = new PackageList(this).getPackages();
+     // packages.add(new ReactNativeFirebaseAuthPackage());
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
-      // packages.add(new ReactNativeFirebaseAppPackage());
       return packages;
     }
 

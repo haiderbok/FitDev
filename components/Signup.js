@@ -1,138 +1,264 @@
-/* Creator: Muhammad Bokhari
- * Date : 9/20/2020
- * Sign up page 
-*/
 import React, { Component } from 'react';
-import {Text, View, StyleSheet} from 'react-native';
-import { AppLoading } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
-import * as Font from 'expo-font';
-import { Container, Header, Content, Form, Item, Input, Title, Button } from 'native-base';
-import {connect} from 'react-redux';
-import {addUser} from '../actions/signupActions';
+import { StyleSheet, Text, ScrollView, Alert} from 'react-native';
+import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
-class SignUp extends Component  {
-    constructor() {
-        super();
-        this.state = {
-          isReady: false,
-          last_name :"" ,
-          first_name: "",
-          email:"",
-          password: "",
-          re_password: ""
-        };
-      }
-
-    /* Fields validation for the sign up page ----- in Progress -----cd  */
-     feildValidation =  () =>  {
-
-        const values = Object.values(this.state);
-        values.forEach(function (item,index){
-              console.log (index, item);
-                
-            if (!item) {
-                str =  "Error" + item + "is empty. Please fill it out";
-                return str;
-            }
-
-            if (this.state.re_password.localeCompare(this.state.password) != 0) {
-                str = "Error: The passwords do not match";
-            }
-
-        });
-    }
-    /* Function that handles submitting of sign up form */
-       onPress = (e) => {
-        this.props.addUser(this.state);
-      }
-      
-      
-      async componentDidMount() {
-        await Font.loadAsync({
-          Roboto: require('native-base/Fonts/Roboto.ttf'),
-          Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-          ...Ionicons.font,
-        });
-        this.setState({ isReady: true });
-      }
-    
-
-    render () {
-        if (this.state.isReady) {
-            return (
-                <Container >
-                    <Header > 
-                    <Title>Signup</Title>
-                    </Header>
-                    <Content>
-                    <Form style= {styles.form}>
-                        <Item style={styles.item}>
-                        <Input id = "last_name" onChangeText={(text) => this.setState({last_name: text})} placeholder="Last Name" />
-                        </Item>
-                        <Item style={styles.item}>
-                        <Input id = "first_name" onChangeText={(text) => this.setState({first_name: text})} placeholder="First Name" />
-                        </Item>
-                        <Item style={styles.item}>
-                        <Input id = "email" onChangeText={(text) => this.setState({email: text})} placeholder="Email" />
-                        </Item>
-                        <Item style={styles.item}>
-                        <Input id = "password" onChangeText={(text) => this.setState({password: text})} placeholder="Password" />
-                        </Item>
-                        <Item style={styles.item} >
-                        <Input id = "re-password" onChangeText={(text) => this.setState({re_password: text})} placeholder="Re enter Password" />
-                        </Item>
-                    </Form>
-                    </Content>
-                    <Button onPress={this.onPress} style={styles.button}><Text style={styles.text}>Submit</Text></Button>
-                </Container> 
-
-            );
-        } else {
-            return(
-                <AppLoading/>
-            );
-        }
-    }
-
+const theme = {
+  dark: false,
+  roundness: 4,
+  colors: {
+          primary: '#1eaaf1',
+          accent: '#005cf1',
+          background: '#ffffff',
+          surface: '#ffffff',
+          error: '#B00020',
+          text: '#000000',
+          disabled: '#000000',
+          placeholder: '#1eaaf1',
+          backdrop: '#d20022',
+          notification: '#e46eef',
+  },
+  fonts : {
+          regular: 'HelveticaNeue',
+          medium: 'HelveticaNeue-Medium',
+          light: 'HelveticaNeue-Light',
+          thin: 'HelveticaNeue-Thin',
+  },
+  animation: {
+    scale: 1.0,
+  },
 }
 
-// Style sheet
+class Signup extends Component {
+  constructor() {
+    super();
+    this.state = { email : "", password : "", confirmPassword : "", fname : "", lname: "" };
+  }
+
+  handleSignUp = () => {
+
+    if (this.state.fname == "") {
+      Alert.alert(
+          'First Name field error',
+          'First Name is empty',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+        return;
+    }
+    else if (this.state.lname == "") {
+      Alert.alert(
+          'Last Name field error',
+          'Last Name is empty',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+        return;
+    }
+    else if(this.state.email == "") {
+      Alert.alert(
+        'Email field error',
+        'Email is empty',
+        [
+          { text: 'OK' },
+        ],
+        { cancelable: false }
+      );
+      return;
+    }
+    else if (this.state.password == "") {
+      Alert.alert(
+          'Password field error',
+          'Password is empty',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+        return;
+    }
+    else if (this.state.confirmPassword == "") {
+      Alert.alert(
+          'Confirm password field error',
+          'Confirm Password is empty',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+        return;
+    }
+    else if (this.state.password != this.state.confirmPassword) {
+      Alert.alert(
+          'Passwords dont match',
+          'Make sure your passwords match',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+        return;
+    }
+
+    auth()
+    .createUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then((userCredentials) => {
+      firestore()
+        .collection('users')
+        .doc(userCredentials.user.uid)
+        .set({
+          uid: userCredentials.user.uid,
+          fname: this.state.fname,
+          lname: this.state.lname,
+          email: this.state.email
+        })
+        .then(() => {
+          Alert.alert(
+            'Successfully signed up user!',
+            'User has been successfully signed up',
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          );
+          this.setState({
+            fname: "",
+            lname: "",
+            email: "",
+            password: "",
+            confirmPassword: ""
+          })
+        })
+        .catch(error => {
+          Alert.alert(
+            'Error',
+            error.message,
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          );
+        })
+        
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') {
+        Alert.alert(
+          'Email already in use',
+          'Please use another email to signup',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+      }
+      else if (error.code === 'auth/invalid-email') {
+        Alert.alert(
+          'Email address field error',
+          'You entered an incorrect email format',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+      }
+      else {
+        console.error(error);
+        Alert.alert(
+          'Error',
+          error.message,
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        );
+      }
+    });
+
+
+  }
+
+  render() {
+    return (
+      <PaperProvider theme={theme}>
+        <ScrollView style={styles.container}>
+        <TextInput
+            style={{ marginTop:30, marginLeft: 10, marginRight:10, flex: 8, height: 45}}
+            label='First Name'
+            mode='outlined'
+            multiline
+            blurOnSubmit
+            autoCapitalize="none"
+            onChangeText={fname => this.setState({ fname })}
+            value={this.state.fname}
+        />
+
+        <TextInput
+            style={{ margin:10, flex: 50, height: 45 }}
+            label='Last Name'
+            mode='outlined'
+            multiline
+            blurOnSubmit
+            autoCapitalize="none"
+            onChangeText={lname => this.setState({ lname })}
+            value={this.state.lname}
+        />
+
+        <TextInput
+            style={{ margin:10, flex: 50, height: 45}}
+            label='Email Address'
+            mode='outlined'
+            multiline
+            blurOnSubmit
+            autoCapitalize="none"
+            onChangeText={email => this.setState({ email })}
+            value={this.state.email}
+        />
+
+        <TextInput
+            style={{ margin:10, flex: 50, height: 45}}
+            label='Password'
+            mode='outlined'
+            blurOnSubmit
+            secureTextEntry
+            onChangeText={password => this.setState({ password })}
+            value={this.state.password}
+        />
+
+        <TextInput
+            style={{ margin:10, flex: 50, height: 45}}
+            label='Confirm Password'
+            mode='outlined'
+            blurOnSubmit
+            secureTextEntry
+            onChangeText={confirmPassword => this.setState({ confirmPassword })}
+            value={this.state.confirmPassword}
+        />
+        
+
+        <Button style={{margin: 10, justifyContent: 'center', flex: 5, borderColor: '#1eaaf1', marginBottom: 3, backgroundColor: '#1eaaf1' }} onPress={this.handleSignUp}>
+            <Text style={{textAlign: 'center', fontSize: 20, margin: 3, fontWeight: 'bold', color: 'white' }}>
+                Sign up!
+            </Text>
+        </Button>
+
+
+        </ScrollView>
+      </PaperProvider>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
-    container : {
-        flex : 1,
-        padding: 24,
-        backgroundColor: "#eaeaea"
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
+});
 
-    form : {
-        marginTop: 150,
-    },
-    item : {
-        padding: 10,
-    },
-    button : {
-        marginLeft: 140,
-        marginBottom: 120,
-        width: 140
-    },
-    text : {
-        textAlign: "center",
-        marginLeft: 45
-    }
-})
-
-const mapStateToProps = (state) => {
-    return {
-        users: state.signup.users
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        addUser : (user) => dispatch(addUser(user)),
-    }  
-}
-
-export default connect(mapStateToProps,mapDispatchToProps)(SignUp);
+export default Signup;

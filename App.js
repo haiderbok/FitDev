@@ -1,27 +1,32 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import {createStore, applyMiddleware, compose} from 'redux';
-import SignUp from './components/Signup'
-import {Provider} from 'react-redux'
-import rootReducer from './reducers/rootReducer'
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux'
 import thunk from 'redux-thunk';
+import rootReducer from './reducers/rootReducer'
 import Signin from './components/Signin';
+// import Home from './components/Home';
+import Signup from './components/Signup';
+// import SplashScreen from 'react-native-splash-screen'
+import Forgotpassword from './components/Forgotpassword'
 
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
+export default class App extends React.Component {
 
-
-
-
-const store = createStore(rootReducer,applyMiddleware(thunk));
-
-
-export default function App() {
-  
-  return (
-    <Provider store={store}>
-      <Signin />
-    </Provider>
-  );
+  // componentDidMount() {
+  //   // do stuff while splash screen is shown
+  //     // After having done stuff (such as async tasks) hide the splash screen
+  //     SplashScreen.hide();
+  // }
+  render() {
+    return (
+      <Provider store={store}>
+        {/* <Signin /> */}
+        {/* <Home></Home> */}
+        {/* <Signup></Signup> */}
+        <Forgotpassword />
+      </Provider>
+    );
+  }
 }
-
 

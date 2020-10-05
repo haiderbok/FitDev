@@ -20,7 +20,7 @@ const SignUpreducer = (state = initialState, action) => {
               firestore().collection("users").add({
                   last_name : action.user.last_name,
                   first_name: action.user.first_name,
-                  email: action.user.email,
+                  email: action.user.email.trim(),
                   password: action.user.password,
               })
               return state

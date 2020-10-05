@@ -23,7 +23,7 @@ export default class App extends React.Component {
       <Provider store={store}>
         {/* <Signin /> */}
         {/* <Home></Home> */}
-        {/* <Signup></Signup> */}
+        {/* <Signup></Signup>  */}
         <Forgotpassword />
       </Provider>
     );

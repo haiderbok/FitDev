@@ -33,7 +33,7 @@ export const theme = {
     },
 
     text : {
-        marginTop:350,
+        marginTop:50,
         marginLeft: 10, 
         marginRight:10, 
         flex: 8,
@@ -55,5 +55,12 @@ export const theme = {
         margin: 3, 
         fontWeight: 'bold',
         color: 'white' 
-    }
+    },
+
+    error: {
+      textAlign: 'center',
+      fontSize: 24,
+      marginTop: 250,
+      color: 'red',
+    },
   });

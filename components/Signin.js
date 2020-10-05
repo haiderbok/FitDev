@@ -27,6 +27,7 @@ class Signin extends Component {
             iconname : '',
         }
     }
+    
 
      onPress = () => {
         // // this.setState({iconname : '', wronginfo:false, rightinfo: false});
